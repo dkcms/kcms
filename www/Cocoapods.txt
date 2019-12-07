@@ -1,0 +1,15 @@
+使用默认源
+$ pod repo remove ~/.cocoapods/repos/master
+$ git clone https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git ~/.cocoapods/repos/master
+
+podFile第一行加上：
+$ source 'https://mirrors.tuna.tsinghua.edu.cn/git/CocoaPods/Specs.git'
+
+系统 macOS 10.15
+$ sudo gem install -n /usr/local/bin cocoapods
+
+检测 是否安装成功
+$ pod search AFNetworking
+
+修改项目权限 否则 pod install 报错
+$ sudo chmod -R 755 ~/IOS
