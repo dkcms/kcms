@@ -12,18 +12,6 @@ $ yum -y install python-pip
 检查是否安装成功
 $ pip -V
 
-关闭 iptables
-$ chkconfig iptables off
-
-安装防火墙firewalld
-$ yum -y install firewalld
-
-开启firewalld防火墙
-$ systemctl start firewalld
-
-查看firewalld状态
-$ systemctl status firewalld
-
 安装 shadowsocks 
 $ pip install shadowsocks
 
@@ -64,6 +52,24 @@ systemctl start shadowsocks
 
 #查看状态命令
 systemctl status shadowsocks -l
+
+安装防火墙firewalld
+$ yum -y install firewalld
+
+启动 firewalld
+$ systemctl start firewalld
+
+关闭 firewalld
+$ systemctl stop firewalld
+
+开机禁用 firewalld
+$ systemctl disable firewalld
+
+开机启用 firewalld
+$ systemctl enable firewalld
+
+查看firewalld状态
+$ systemctl status firewalld
 
 #开启端口 最大端口65535
 firewall-cmd --zone=public --add-port=8080-8081/tcp --permanent
