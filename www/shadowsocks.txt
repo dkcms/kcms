@@ -1,7 +1,22 @@
-Outline的Access Key格式: ss://加密方式:密码@IP地址:端口
+﻿Outline的Access Key格式: ss://加密方式:密码@IP地址:端口
 
 查询 python 版本 Python 2.6 or 2.7.以上
 $ python --version
+
+安装扩展源EPEL
+$ yum -y install epel-release
+
+安装 pip
+$ yum -y install python-pip
+
+检查是否安装成功
+$ pip -V
+
+关闭 iptables
+$ chkconfig iptables off
+
+安装防火墙firewalld
+$ yum -y install firewalld
 
 安装 shadowsocks 
 $ pip install shadowsocks
