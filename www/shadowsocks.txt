@@ -1,71 +1,71 @@
-﻿Outline的Access Key格式: ss://加密方式:密码@IP地址:端口
+Outline的Access Key格式: ss://加密方式:密码@IP地址:端口
+
+客户端 Android 下载
+https://github.com/shadowsocks/shadowsocks-android/releases
  
 国内阿里的镜像
 $ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 
 YUM缓存生成
-$ yum clean all	//清理yum缓存，使设置生效
-$ yum makecache	//将服务器上的软件包信息缓存到本地,以提高搜索安装软件的速度
-$ yum -y update	//更新本地yum
+$ yum clean all
+$ yum makecache
+$ yum -y update
 
 编译工具安装
-$ yum install unzip openssl openssl-devel gettext gcc autoconf libtool automake make asciidoc xmlto udns-devel libev-devel pcre pcre-devel git c-ares-devel wget zlib-devel libsodium-devel mbedtls-devel -y
-
-查询 python 版本 Python 2.6 or 2.7.以上
-$ python --version
+$ yum install git unzip python2 perl openssl openssl-devel gettext gcc autoconf libtool automake make asciidoc xmlto udns-devel libev-devel pcre pcre-devel git c-ares-devel wget zlib-devel libsodium-devel mbedtls-devel -y
 
 安装扩展源EPEL
 $ yum -y install epel-release
 
-安装chacha20
+# 安装 Libsodium
 $ yum -y install libsodium
 
-安装 pip
-$ yum -y install python-pip
+# 安装 Mbedtls
+$ yum -y install mbedtls
 
-检查是否安装成功
-$ pip -V
-
-安装 shadowsocks 
-$ pip install shadowsocks
+安装 shadowsocks-libev
+$ git clone https://github.com/shadowsocks/shadowsocks-libev.git
+$ cd shadowsocks-libev
+$ git submodule update --init --recursive
+$ ./autogen.sh && ./configure --disable-documentation && make
+$ sudo make install
 
 配置 shadowsocks json文件
 $ vi /etc/shadowsocks.json
 
 {
-  "server":"0.0.0.0",
-  "local_address": "127.0.0.1",
-  "local_port":1080,
-  "port_password": {
-    "8888": "password",
-    "8888": "password"
-  },
-  "timeout":300,
-  "method":"chacha20",
-  "fast_open": false
+    "server":["::0","0.0.0.0"],
+    "server_port":8888,
+    "local_port":1080,
+    "password":"password",
+    "timeout":600,
+    "method":"chacha20-ietf-poly1305"
 }
 
 配置 shadowsocks 自启动
-$ vi /etc/systemd/system/shadowsocks.service
+$ vi /etc/systemd/system/shadowsocks-libev.service
 
 [Unit]
-Description=Shadowsocks
+Description=shadowsocks-libev
 
 [Service]
+User=root
+Group=root
 TimeoutStartSec=0
-ExecStart=/usr/bin/ssserver -c /etc/shadowsocks.json
+ExecStart=/usr/local/bin/ss-server -c /etc/shadowsocks.json -u
+Restart=on-abort
 
 [Install]
 WantedBy=multi-user.target
 
 # 设置开机自启命令
-systemctl enable shadowsocks
+$ systemctl enable shadowsocks-libev
 
 # 启动命令
-systemctl start shadowsocks
+$ systemctl start shadowsocks-libev
 
 #查看状态命令
-systemctl status shadowsocks -l
+$ systemctl status shadowsocks-libev -l
 
 安装防火墙firewalld
 $ yum -y install firewalld
