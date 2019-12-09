@@ -1,4 +1,7 @@
 ﻿Outline的Access Key格式: ss://加密方式:密码@IP地址:端口
+ 
+ 国内阿里的镜像
+ $ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 
 编译工具安装
 $ yum install unzip openssl openssl-devel gettext gcc autoconf libtool automake make asciidoc xmlto udns-devel libev-devel pcre pcre-devel git c-ares-devel wget zlib-devel libsodium-devel mbedtls-devel -y
