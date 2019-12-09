@@ -52,7 +52,7 @@ Description=shadowsocks-libev
 User=root
 Group=root
 TimeoutStartSec=0
-ExecStart=/usr/local/bin/ss-server -c /etc/shadowsocks.json -u
+ExecStart=/usr/local/bin/ss-server -c /etc/shadowsocks.json
 Restart=on-abort
 
 [Install]
