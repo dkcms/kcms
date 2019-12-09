@@ -3,6 +3,11 @@
 国内阿里的镜像
 $ wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 
+YUM缓存生成
+$ yum clean all	//清理yum缓存，使设置生效
+$ yum makecache	//将服务器上的软件包信息缓存到本地,以提高搜索安装软件的速度
+$ yum -y update	//更新本地yum
+
 编译工具安装
 $ yum install unzip openssl openssl-devel gettext gcc autoconf libtool automake make asciidoc xmlto udns-devel libev-devel pcre pcre-devel git c-ares-devel wget zlib-devel libsodium-devel mbedtls-devel -y
 
