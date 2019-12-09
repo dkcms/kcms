@@ -6,6 +6,9 @@ $ python --version
 安装扩展源EPEL
 $ yum -y install epel-release
 
+安装chacha20
+$ yum -y install libsodium
+
 安装 pip
 $ yum -y install python-pip
 
