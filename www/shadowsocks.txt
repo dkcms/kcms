@@ -1,5 +1,11 @@
 Outline的Access Key格式: ss://加密方式:密码@IP地址:端口
 
+清屏命令
+$ clear
+
+清空历史命令
+$ echo > .bash_history
+
 客户端 Android 下载
 https://github.com/shadowsocks/shadowsocks-android/releases
  
