@@ -43,7 +43,7 @@ $ vi /etc/shadowsocks.json
 }
 
 配置 shadowsocks 自启动
-$ vi /etc/systemd/system/shadowsocks-libev.service
+$ vi /etc/systemd/system/shadowsocks.service
 
 [Unit]
 Description=shadowsocks
@@ -61,13 +61,13 @@ Restart=on-abort
 WantedBy=multi-user.target
 
 # 设置开机自启命令
-$ systemctl enable shadowsocks-libev
+$ systemctl enable shadowsocks
 
 # 启动命令
-$ systemctl start shadowsocks-libev
+$ systemctl start shadowsocks
 
 #查看状态命令
-$ systemctl status shadowsocks-libev -l
+$ systemctl status shadowsocks -l
 
 安装防火墙firewalld
 $ yum -y install firewalld
