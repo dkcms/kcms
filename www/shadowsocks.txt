@@ -46,12 +46,14 @@ $ vi /etc/shadowsocks.json
 $ vi /etc/systemd/system/shadowsocks-libev.service
 
 [Unit]
-Description=shadowsocks-libev
+Description=shadowsocks
+After=network.target
 
 [Service]
 User=root
 Group=root
 TimeoutStartSec=0
+PrivateTmp=true
 ExecStart=/usr/local/bin/ss-server -c /etc/shadowsocks.json
 Restart=on-abort
 
