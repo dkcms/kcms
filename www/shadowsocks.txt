@@ -1,5 +1,8 @@
 ﻿Outline的Access Key格式: ss://加密方式:密码@IP地址:端口
 
+编译工具安装
+$ yum install unzip openssl openssl-devel gettext gcc autoconf libtool automake make asciidoc xmlto udns-devel libev-devel pcre pcre-devel git c-ares-devel wget zlib-devel libsodium-devel mbedtls-devel -y
+
 查询 python 版本 Python 2.6 or 2.7.以上
 $ python --version
 
