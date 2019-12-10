@@ -132,9 +132,11 @@ function getHost() {
 function getDomain($dom) {
     preg_match('/[\w][\w-]*\.(?:com\.cn|com|cn|co|net|org|gov|cc|biz|info)(\/|$)/is', getHost(), $domain);
     if(in_array($domain[0], $dom)) {
+        $http_type = ((isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on')||(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])&&$_SERVER['HTTP_X_FORWARDED_PROTO']=='https'))?'https://':'http://';
         $domDirs = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.trim($domain[0]).DIRECTORY_SEPARATOR;
         $dirName = substr(getHost(), 0, strrpos(getHost(), $domain[0]));
-        $dirs = $domDirs.str_replace('.', DIRECTORY_SEPARATOR, $dirName);
+        if(empty($dirName)){header("HTTP/1.1 301 Moved Permanently");header("Location: ".$http_type.'www.'.$domain[0]);exit;}
+	$dirs = $domDirs.str_replace('.', DIRECTORY_SEPARATOR, $dirName);
         if(!is_dir($dirs)) {mkdirs($dirs);}
         return array($domDirs, $dirs, $domain[0]);
     }else{
