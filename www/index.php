@@ -1,5 +1,5 @@
 <?php 
-header("Content-Type:text/html; charset=utf-8"); 
+header("Content-Type: text/html; charset=utf-8"); 
 if(empty($_GET['id'])) {
 $dom = getTxt('domain.txt');
 $tmp = getHtml('muban.html');
@@ -386,6 +386,7 @@ function getTxt($file) {
     return $txtAll;
 }
 
+
 function getHtml($file) {
     $file = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.$file;
     if(!file_exists($file)) {exit($file.getSrt2Unicode('&#32;&#19981;&#33021;&#20026;&#31354;',1));}
@@ -418,18 +419,21 @@ function getCurlSrt($url) {
     $ch = curl_init();
     $randIP = getRandIP();
     $user_agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_HEADER, FALSE);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-    curl_setopt($ch, CURLOPT_NOBODY, FALSE);
-    curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
-    curl_setopt($ch, CURLOPT_REFERER, $url);
-    curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP));
+    $options =  array(
+        CURLOPT_URL => $url,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_HEADER => FALSE,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_SSL_VERIFYPEER => FALSE,
+        CURLOPT_SSL_VERIFYHOST => FALSE,
+        CURLOPT_NOBODY => FALSE,
+        CURLOPT_HTTPGET => TRUE,
+        CURLOPT_REFERER => $url,
+        CURLOPT_USERAGENT => $user_agent,
+        CURLOPT_HTTPHEADER => array('X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP),
+    );
+    curl_setopt_array($ch, $options);
     $temp = curl_exec($ch);
     curl_close($ch);
     return $temp;
@@ -439,24 +443,27 @@ function getCookie($url) {
     if(file_exists(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt')) {
         unlink(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt');
     }
-    $curl = curl_init();
+    $ch = curl_init();
     $randIP = getRandIP();
     $user_agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-    curl_setopt($curl, CURLOPT_NOBODY, FALSE);
-    curl_setopt($curl, CURLOPT_HEADER, TRUE);
-    curl_setopt($curl, CURLOPT_HTTPGET, TRUE);
-    curl_setopt($curl, CURLOPT_REFERER, $url);
-    curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-    curl_setopt($curl, CURLOPT_COOKIEJAR, __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt');
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: text/plain', 'X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP));
-    $temp = curl_exec($curl);
-    curl_close($curl);
+    $options =  array(
+        CURLOPT_URL => $url,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_NOBODY => FALSE,
+        CURLOPT_HEADER => TRUE,
+        CURLOPT_HTTPGET => TRUE,
+        CURLOPT_REFERER => $url,
+        CURLOPT_USERAGENT => $user_agent,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_SSL_VERIFYPEER => FALSE,
+        CURLOPT_SSL_VERIFYHOST => FALSE,
+        CURLOPT_COOKIEJAR => __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt',
+        CURLOPT_HTTPHEADER => array('Content-Type: text/plain', 'X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP),
+    );
+    curl_setopt_array($ch, $options);
+    $temp = curl_exec($ch);
+    curl_close($ch);
     return $temp;
 }
 
@@ -528,24 +535,27 @@ function getSocom($srt) {
 }
 
 function getKeyUrl($url) {
-    $curl = curl_init();
+    $ch = curl_init();
     $randIP = getRandIP();
     $user_agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-    curl_setopt($curl, CURLOPT_HTTPGET, TRUE);
-    curl_setopt($curl, CURLOPT_NOBODY, FALSE);
-    curl_setopt($curl, CURLOPT_HEADER, FALSE);
-    curl_setopt($curl, CURLOPT_REFERER, $url);
-    curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-    curl_setopt($curl, CURLOPT_COOKIEFILE, __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt');
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: text/plain', 'X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP));
-    $result = curl_exec ($curl);
-    curl_close($curl);
+    $options =  array(
+        CURLOPT_URL => $url,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_HTTPGET => TRUE,
+        CURLOPT_NOBODY => FALSE,
+        CURLOPT_HEADER => FALSE,
+        CURLOPT_REFERER => $url,
+        CURLOPT_USERAGENT => $user_agent,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_SSL_VERIFYPEER => FALSE,
+        CURLOPT_SSL_VERIFYHOST => FALSE,
+        CURLOPT_COOKIEFILE => __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt',
+        CURLOPT_HTTPHEADER => array('Content-Type: text/plain', 'X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP),
+    );
+    curl_setopt_array($ch, $options);
+    $result = curl_exec ($ch);
+    curl_close($ch);
     return $result;
 }
 
@@ -578,23 +588,26 @@ function getRandIP() {
 }
 
 function getImgUrl($url) {
-    $curl = curl_init();
+    $ch = curl_init();
     $randIP = getRandIP();
     $user_agent = 'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)';
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 10);
-    curl_setopt($curl, CURLOPT_HTTPGET, TRUE);
-    curl_setopt($curl, CURLOPT_NOBODY, FALSE);
-    curl_setopt($curl, CURLOPT_HEADER, FALSE);
-    curl_setopt($curl, CURLOPT_REFERER, $url);
-    curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($curl, CURLOPT_FOLLOWLOCATION, TRUE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array('X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP));
-    $result = curl_exec ($curl);
-    curl_close($curl);
+    $options =  array(
+        CURLOPT_URL => $url,
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_HTTPGET => TRUE,
+        CURLOPT_NOBODY => FALSE,
+        CURLOPT_HEADER => FALSE,
+        CURLOPT_REFERER => $url,
+        CURLOPT_USERAGENT => $user_agent,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_SSL_VERIFYPEER => FALSE,
+        CURLOPT_SSL_VERIFYHOST => FALSE,
+        CURLOPT_HTTPHEADER => array('X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP),
+    );
+    curl_setopt_array($ch, $options);
+    $result = curl_exec ($ch);
+    curl_close($ch);
     return $result;
 }
 
@@ -607,7 +620,7 @@ function image_size_add($imgsrc, $imgdst) {
 		case 1:
             $giftype = check_gifcartoon($imgsrc);
 		    if($giftype) {
-			    header('Content-Type:image/gif');
+			    header('Content-Type: image/gif');
 			    $image_wp = imagecreatetruecolor($new_width, $new_height);
 			    $image = imagecreatefromgif($imgsrc);
 			    imagecopyresampled($image_wp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
@@ -616,7 +629,7 @@ function image_size_add($imgsrc, $imgdst) {
 		    }
 		    break;
 		case 2:
-		    header('Content-Type:image/jpeg');
+		    header('Content-Type: image/jpeg');
 		    $image_wp = imagecreatetruecolor($new_width, $new_height);
 		    $image = imagecreatefromjpeg($imgsrc);
 		    imagecopyresampled($image_wp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
@@ -624,7 +637,7 @@ function image_size_add($imgsrc, $imgdst) {
 		    imagedestroy($image_wp);
 		    break;
 		case 3:
-		    header('Content-Type:image/png');
+		    header('Content-Type: image/png');
 		    $image_wp = imagecreatetruecolor($new_width, $new_height);
 		    $image = imagecreatefrompng($imgsrc);
 		    imagecopyresampled($image_wp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
@@ -633,7 +646,7 @@ function image_size_add($imgsrc, $imgdst) {
 		break;
 	}
     ob_end_clean();
-    header("Content-Type:text/html");
+    header("Content-Type: text/html");
 }
 
 function check_gifcartoon($image_file) {
