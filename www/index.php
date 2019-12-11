@@ -497,6 +497,13 @@ function getCookie($url, $randIP) {
         CURLOPT_SSL_VERIFYPEER => FALSE,
         CURLOPT_SSL_VERIFYHOST => FALSE,
         CURLOPT_COOKIEJAR => __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt',
+
+        //CURLOPT_PROXY => '127.0.0.1', //代理服务器地址
+        //CURLOPT_PROXYPORT => '8001', //代理服务器端口
+        //CURLOPT_PROXYAUTH => CURLAUTH_BASIC, //代理认证模式
+        //CURLOPT_PROXYTYPE => CURLPROXY_HTTP, //使用 HTTP 代理模式
+        //CURLOPT_PROXYUSERPWD => ':',  //HTTP代理认证帐号, USERNAME:PASSWORD的格式
+
         CURLOPT_HTTPHEADER => array('Content-Type: text/plain', 'X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP),
     );
     curl_setopt_array($ch, $options);
@@ -508,6 +515,8 @@ function getCookie($url, $randIP) {
 function getBaidu($srt) {
     $IP = getRandIP();
     $temp = getCookie('https://m.baidu.com/s?word='.$srt.'&ie=utf-8', $IP);
+    preg_match('/<title>(.+?)<\/title>/is', $temp, $_title);
+    if($_title[1] == '百度安全验证'){return getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1);}
     preg_match_all('/B\.comm\.lid \= \"(.+?)\"/is', $temp, $qid);
     preg_match_all('/Set-Cookie: (.+?);/is', $temp, $_array);
     $_array = (!empty($qid[1])?'QID='.$qid[1][0].'|'.implode('|', $_array[1]):getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
@@ -540,7 +549,7 @@ function getBaidu($srt) {
             $newsStr[] = trim($val['q']);
         }
     }
-    return (!empty($newsStr)?array_values(array_flip(array_flip($newsStr))):getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
+    return (!empty($newsStr)?array_values(array_flip(array_flip($newsStr))):getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1));
 }
 
 function getShenma($srt) {
@@ -552,6 +561,8 @@ function getShenma($srt) {
             foreach ($_array['r'] as $vals) {
                 $newsStr[] = trim($vals['w']);
             }
+        } else {
+            return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
         }
     }
     return (!empty($newsStr) ? $newsStr : getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
@@ -569,6 +580,8 @@ function getSocom($srt) {
                 foreach ($_array['data']['sug'] as $vals) {
                     $newsStr[] = trim($vals['word']);
                 }
+            } else {
+                return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
             }
         }
     }
