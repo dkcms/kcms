@@ -1,5 +1,6 @@
 <?php 
 header("Content-Type: text/html; charset=utf-8"); 
+$IP = getRandIP();
 if(empty($_GET['id'])) {
 $dom = getTxt('domain.txt');
 $tmp = getHtml('muban.html');
@@ -48,9 +49,15 @@ if(!empty($_GET['id'])&&!empty($_GET['n'])) {
     echo '已采集 '.count($keywords).' 条数据';
     if(!empty($keywords[$id[0]-1])){
         $data = mb_convert_encoding(trim($keywords[$id[0]-1]), 'utf-8', mb_detect_encoding(trim($keywords[$id[0]-1]), array('ASCII','UTF-8','GB2312','GBK','LATIN1','BIG5')));
-        $baidu = getBaidu(trim($data));
-        $senma = getShenma(trim($data));
-        $socom = getSocom(trim($data));
+        do {
+            $baidu = getBaidu(trim($data));
+        } while ($baidu == '采集失败');
+        do {
+            $senma = getShenma(trim($data));
+        } while ($senma == '采集失败');
+        do {
+            $socom = getSocom(trim($data));
+        } while ($socom == '采集失败');
         if(is_array($baidu)){
             $keywords = array_values(array_flip(array_flip(array_merge($keywords, $baidu))));
         }
@@ -86,12 +93,12 @@ if(!empty($_GET['id'])&&!empty($_GET['k'])) {
 if(!empty($_GET['id'])&&!empty($_GET['i'])){
     preg_match('/^[0-9]{1,}$/', $_GET['id'], $id);
     preg_match('/^[0-9]{1,}$/', $_GET['i'], $n);
-    $temp = getImgUrl('https://www.mzitu.com/'.$id[0].'/'.$n[0]);
+    $temp = getImgUrl('https://www.mzitu.com/'.$id[0].'/'.$n[0], $IP);
     preg_match('/class="main-image".*?src="(.+?)"/is', $temp, $img);
     preg_match('/class="main-image".*?alt="(.+?)"/is', $temp, $title);
     if(!empty($img[1])){
         $imgName = pathinfo($img[1]);
-        $imgFlow = getImgUrl($img[1]);
+        $imgFlow = getImgUrl($img[1], $IP);
         if(!empty($imgFlow)){
 	    $imgDir = __DIR__.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$title[1].DIRECTORY_SEPARATOR;
             if(!is_dir($imgDir)) {mkdirs($imgDir);}
@@ -119,7 +126,7 @@ if(!empty($_GET['id'])&&!empty($_GET['g'])){
             CURLOPT_TIMEOUT => 10,
             CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
             CURLOPT_POSTFIELDS => 'url='.trim($dom[$id[0]-1]).'&type=1',
-            CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded; charset=UTF-8','Origin: http://www.yzcopen.com'),
+            CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded; charset=UTF-8','Origin: http://www.yzcopen.com', 'X-FORWARDED-FOR:' . $IP, 'CLIENT-IP:' . $IP),
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_FOLLOWLOCATION => TRUE,
             CURLOPT_SSL_VERIFYPEER => FALSE,
@@ -448,9 +455,8 @@ function getSrt2Unicode($key, $srt = 0) {
     }
 }
 
-function getCurlSrt($url) {
+function getCurlSrt($url, $randIP) {
     $ch = curl_init();
-    $randIP = getRandIP();
     $user_agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
     $options =  array(
         CURLOPT_URL => $url,
@@ -472,12 +478,11 @@ function getCurlSrt($url) {
     return $temp;
 }
 
-function getCookie($url) {
+function getCookie($url, $randIP) {
     if(file_exists(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt')) {
         unlink(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cookie.txt');
     }
     $ch = curl_init();
-    $randIP = getRandIP();
     $user_agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
     $options =  array(
         CURLOPT_URL => $url,
@@ -501,7 +506,8 @@ function getCookie($url) {
 }
 
 function getBaidu($srt) {
-    $temp = getCookie('https://m.baidu.com/s?word='.$srt.'&ie=utf-8');
+    $IP = getRandIP();
+    $temp = getCookie('https://m.baidu.com/s?word='.$srt.'&ie=utf-8', $IP);
     preg_match_all('/B\.comm\.lid \= \"(.+?)\"/is', $temp, $qid);
     preg_match_all('/Set-Cookie: (.+?);/is', $temp, $_array);
     $_array = (!empty($qid[1])?'QID='.$qid[1][0].'|'.implode('|', $_array[1]):getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
@@ -509,7 +515,7 @@ function getBaidu($srt) {
     preg_match('/BAIDUID\=(.+?)FG\=1/is', $_array, $id);
     preg_match('/H_WISE_SIDS\=(.+?)\|/is', $_array, $sid);
     if(!empty($qid)) {
-        $_array = json_decode(getKeyUrl('https://m.baidu.com/rec?platform=wise&ms=1&lsAble=1&rset=rcmd&word='.$srt.'&qid='.urlencode($qid[1]).'&rq='.$srt.'&from=0&baiduid='.urlencode($id[1]).'FG=1&tn=&clientWidth=375&t='.getMillisecond().'&r='.mt_rand(2000,5000)), TRUE);
+        $_array = json_decode(getKeyUrl('https://m.baidu.com/rec?platform=wise&ms=1&lsAble=1&rset=rcmd&word='.$srt.'&qid='.urlencode($qid[1]).'&rq='.$srt.'&from=0&baiduid='.urlencode($id[1]).'FG=1&tn=&clientWidth=375&t='.getMillisecond().'&r='.mt_rand(2000,5000), $IP), TRUE);
     }
     if(!empty($_array['rs']['rcmd']['list'])){
         foreach ($_array['rs']['rcmd']['list'] as $id => $val) {
@@ -527,7 +533,7 @@ function getBaidu($srt) {
         }
     }
     if(!empty($sid)) {
-        $_array = json_decode(getKeyUrl('https://m.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=wise&from=wise_web&sugsid='.str_replace('_', ',', $sid[1]).'&net=&os=1&sp=null&rm_brand=0&wd='.$srt.'&lid='.urlencode($qid[1]).'&_='.getMillisecond()), TRUE);
+        $_array = json_decode(getKeyUrl('https://m.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=wise&from=wise_web&sugsid='.str_replace('_', ',', $sid[1]).'&net=&os=1&sp=null&rm_brand=0&wd='.$srt.'&lid='.urlencode($qid[1]).'&_='.getMillisecond(), $IP), TRUE);
     }
     if(!empty($_array['g'])){
         foreach ($_array['g'] as $id => $val) {
@@ -538,7 +544,8 @@ function getBaidu($srt) {
 }
 
 function getShenma($srt) {
-    $temp = getKeyUrl('https://sugs.m.sm.cn/web?t=w&uc_param_str=dnnwnt&scheme=https&q='.urlencode($srt).'&_='.getMillisecond());
+    $IP = getRandIP();
+    $temp = getKeyUrl('https://sugs.m.sm.cn/web?t=w&uc_param_str=dnnwnt&scheme=https&q='.urlencode($srt).'&_='.getMillisecond(), $IP);
     if(!empty($temp)){
         $_array = json_decode($temp, TRUE);
         if(!empty($_array['r'])){
@@ -551,10 +558,11 @@ function getShenma($srt) {
 }
 
 function getSocom($srt) {
-    $temp = getCookie('https://m.so.com');
+    $IP = getRandIP();
+    $temp = getCookie('https://m.so.com', $IP);
     if(!empty($temp)){
         preg_match('/encodeURIComponent\(\'(.+?)\'\)/is', $temp, $id);
-        $_array = getKeyUrl('https://m.so.com/suggest/mso?src=mso&caller=strict&sensitive=strict&count=10&llbq='.urlencode($id[1]).'&kw='.$srt);
+        $_array = getKeyUrl('https://m.so.com/suggest/mso?src=mso&caller=strict&sensitive=strict&count=10&llbq='.urlencode($id[1]).'&kw='.$srt, $IP);
         if(!empty($_array)){
             $_array = json_decode($_array, TRUE);
             if(!empty($_array['data']['sug'])){
@@ -567,9 +575,8 @@ function getSocom($srt) {
     return (!empty($newsStr) ? $newsStr : getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
 }
 
-function getKeyUrl($url) {
+function getKeyUrl($url, $randIP) {
     $ch = curl_init();
-    $randIP = getRandIP();
     $user_agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1';
     $options =  array(
         CURLOPT_URL => $url,
@@ -593,9 +600,10 @@ function getKeyUrl($url) {
 }
 
 function getNews() {
+    $IP = getRandIP();
     $fileList = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'title.txt';
     if(!file_exists($fileList)||(time()-filemtime($fileList)) > 300) {
-        $data = getCurlSrt('https://news.163.com/special/0001220O/news_json.js');
+        $data = getCurlSrt('https://news.163.com/special/0001220O/news_json.js', $IP);
         $data = mb_convert_encoding(trim($data), 'utf-8', mb_detect_encoding(trim($data), array('ASCII','UTF-8','GB2312','GBK','LATIN1','BIG5')));
         preg_match_all('/{"c":(.+?),"t":"(.+?)","l":"(.+?)","p":"(.+?)"}/is', $data, $_array, PREG_SET_ORDER);
         foreach ($_array as $val) {
@@ -620,9 +628,8 @@ function getRandIP() {
     return $ip1id.'.'.$ip2id.'.'.$ip3id.'.'.$ip4id;
 }
 
-function getImgUrl($url) {
+function getImgUrl($url, $randIP) {
     $ch = curl_init();
-    $randIP = getRandIP();
     $user_agent = 'Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)';
     $options =  array(
         CURLOPT_URL => $url,
