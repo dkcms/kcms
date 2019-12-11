@@ -104,6 +104,37 @@ if(!empty($_GET['id'])&&!empty($_GET['i'])){
         echo '<script>location.href="/?id='.trim($id[0]+1).'&i=1";</script>';
     }
 }
+if(!empty($urls[ceil($_GET['id'])])&&!empty($_GET['g'])){
+    $dom = getTxt('domain.txt');
+    preg_match('/^[0-9]{1,}$/', $_GET['id'], $id);
+    $ch = curl_init();
+    $options =  array(
+        CURLOPT_URL => 'http://www.yzcopen.com/seo/getspider',
+        CURLOPT_POST => TRUE,
+        CURLOPT_HEADER => FALSE,
+        CURLOPT_NOBODY => FALSE,
+        CURLOPT_COOKIE => 'JSESSIONID=B482E158DD44A8EB9584AD1627CF49BC; the_cookie=the_value;',
+        CURLOPT_REFERER => 'http://www.yzcopen.com/seo/spider',
+        CURLOPT_TIMEOUT => 10,
+        CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
+        CURLOPT_POSTFIELDS => 'url='.trim($urls[$id[0]]).'&type=1',
+        CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded; charset=UTF-8','Origin: http://www.yzcopen.com'),
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_SSL_VERIFYPEER => FALSE,
+        CURLOPT_SSL_VERIFYHOST => FALSE,
+    );
+    curl_setopt_array($ch, $options);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    preg_match('/<title>(.+?)<\/title>/is', $result, $_array);
+    if(!empty($_array[1])){
+        file_put_contents('ok.txt', trim($_array[1]).'|'.trim($urls[$id[0]]).PHP_EOL, FILE_APPEND|LOCK_EX);
+    } else {
+        file_put_contents('no.txt', trim($urls[$id[0]]).PHP_EOL, FILE_APPEND|LOCK_EX);
+    }
+    echo '<script>location.href="/?id='.($id[0]+1).'&g=1";</script>';
+}
 function content_re($html, $dom) {
     $domDir = getDomain($dom);getNews();
     preg_match_all('/{外链(.+?)}/', $html, $link);
