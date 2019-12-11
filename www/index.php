@@ -128,9 +128,9 @@ if(!empty($_GET['id'])&&!empty($_GET['g'])){
     curl_close($ch);
     preg_match('/<title>(.+?)<\/title>/is', $result, $_array);
     if(!empty($_array[1])){
-        file_put_contents('ok.txt', trim($_array[1]).'|'.trim($urls[$id[0]]).PHP_EOL, FILE_APPEND|LOCK_EX);
+        file_put_contents('ok.txt', trim($_array[1]).'|'.trim($dom[$id[0]]).PHP_EOL, FILE_APPEND|LOCK_EX);
     } else {
-        file_put_contents('no.txt', trim($urls[$id[0]]).PHP_EOL, FILE_APPEND|LOCK_EX);
+        file_put_contents('no.txt', trim($dom[$id[0]]).PHP_EOL, FILE_APPEND|LOCK_EX);
     }
     echo '<script>location.href="/?id='.($id[0]+1).'&g=1";</script>';
 }
