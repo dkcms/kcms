@@ -118,7 +118,7 @@ if(!empty($_GET['id'])&&!empty($_GET['g'])){
             CURLOPT_REFERER => 'http://www.yzcopen.com/seo/spider',
             CURLOPT_TIMEOUT => 10,
             CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
-            CURLOPT_POSTFIELDS => 'url='.trim($dom[$id[0]]).'&type=1',
+            CURLOPT_POSTFIELDS => 'url='.trim($dom[$id[0]-1]).'&type=1',
             CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded; charset=UTF-8','Origin: http://www.yzcopen.com'),
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_FOLLOWLOCATION => TRUE,
@@ -130,9 +130,9 @@ if(!empty($_GET['id'])&&!empty($_GET['g'])){
         curl_close($ch);
         preg_match('/<title>(.+?)<\/title>/is', $result, $_array);
         if(!empty($_array[1])){
-            file_put_contents('ok.txt', trim($_array[1]).'|'.trim($dom[$id[0]]).PHP_EOL, FILE_APPEND|LOCK_EX);
+            file_put_contents('ok.txt', trim($_array[1]).'|'.trim($dom[$id[0]-1]).PHP_EOL, FILE_APPEND|LOCK_EX);
         } else {
-            file_put_contents('no.txt', trim($dom[$id[0]]).PHP_EOL, FILE_APPEND|LOCK_EX);
+            file_put_contents('no.txt', trim($dom[$id[0]-1]).PHP_EOL, FILE_APPEND|LOCK_EX);
         }
         echo '<script>location.href="/?id='.($id[0]+1).'&g=1";</script>';
     }
