@@ -106,7 +106,7 @@ if(!empty($_GET['id'])&&!empty($_GET['i'])){
 }
 if(!empty($_GET['id'])&&!empty($_GET['g'])){
     preg_match('/^[0-9]{1,}$/', $_GET['id'], $id);
-    echo '是否被墙第 '.$id[0].' 条数据检验';
+    echo '检测网站第 '.$id[0].' 条数据是否被墙';
     if(!empty($dom[$id[0]])){
         $ch = curl_init();
         $options =  array(
