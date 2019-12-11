@@ -104,8 +104,7 @@ if(!empty($_GET['id'])&&!empty($_GET['i'])){
         echo '<script>location.href="/?id='.trim($id[0]+1).'&i=1";</script>';
     }
 }
-if(!empty($urls[ceil($_GET['id'])])&&!empty($_GET['g'])){
-    $dom = getTxt('domain.txt');
+if(!empty($_GET['id'])&&!empty($_GET['g'])){
     preg_match('/^[0-9]{1,}$/', $_GET['id'], $id);
     $ch = curl_init();
     $options =  array(
@@ -117,7 +116,7 @@ if(!empty($urls[ceil($_GET['id'])])&&!empty($_GET['g'])){
         CURLOPT_REFERER => 'http://www.yzcopen.com/seo/spider',
         CURLOPT_TIMEOUT => 10,
         CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36',
-        CURLOPT_POSTFIELDS => 'url='.trim($urls[$id[0]]).'&type=1',
+        CURLOPT_POSTFIELDS => 'url='.trim($dom[$id[0]]).'&type=1',
         CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded; charset=UTF-8','Origin: http://www.yzcopen.com'),
         CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_FOLLOWLOCATION => TRUE,
