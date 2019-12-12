@@ -519,11 +519,11 @@ function getBaidu($srt) {
     if($_title[1] == '百度安全验证'){return getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1);}
     preg_match_all('/B\.comm\.lid \= \"(.+?)\"/is', $temp, $qid);
     preg_match_all('/Set-Cookie: (.+?);/is', $temp, $_array);
-    $_array = (!empty($qid[1])?'QID='.$qid[1][0].'|'.implode('|', $_array[1]):getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
+    $_array = (!empty($qid[1][0])?'QID='.$qid[1][0].'|'.implode('|', $_array[1]):getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
     preg_match('/QID\=(.+?)\|/is', $_array, $qid);
     preg_match('/BAIDUID\=(.+?)FG\=1/is', $_array, $id);
     preg_match('/H_WISE_SIDS\=(.+?)\|/is', $_array, $sid);
-    if(!empty($qid)) {
+    if(!empty($qid[1])) {
         $_array = json_decode(getKeyUrl('https://m.baidu.com/rec?platform=wise&ms=1&lsAble=1&rset=rcmd&word='.$srt.'&qid='.urlencode($qid[1]).'&rq='.$srt.'&from=0&baiduid='.urlencode($id[1]).'FG=1&tn=&clientWidth=375&t='.getMillisecond().'&r='.mt_rand(2000,5000), $IP), TRUE);
     }
     if(!empty($_array['rs']['rcmd']['list'])){
@@ -541,7 +541,7 @@ function getBaidu($srt) {
             }
         }
     }
-    if(!empty($sid)) {
+    if(!empty($sid[1])) {
         $_array = json_decode(getKeyUrl('https://m.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=wise&from=wise_web&sugsid='.str_replace('_', ',', $sid[1]).'&net=&os=1&sp=null&rm_brand=0&wd='.$srt.'&lid='.urlencode($qid[1]).'&_='.getMillisecond(), $IP), TRUE);
     }
     if(!empty($_array['g'])){
