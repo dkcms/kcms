@@ -521,7 +521,7 @@ function getBaidu($srt) {
     $IP = getRandIP();
     $temp = getCookie('https://m.baidu.com/s?word='.$srt.'&ie=utf-8', $IP);
     preg_match('/<title>(.+?)<\/title>/is', $temp[0], $_title);
-    if($_title[1] == '百度安全验证'){return getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1);}
+    if(!empty($_title[1])&&$_title[1] == '百度安全验证'){return getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1);}
     preg_match_all('/B\.comm\.lid \= \"(.+?)\"/is', $temp[0], $qid);
     preg_match_all('/Set-Cookie: (.+?);/is', $temp[0], $_array);
     $_array = (!empty($qid[1][0])?'QID='.$qid[1][0].'|'.implode('|', $_array[1]):getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
