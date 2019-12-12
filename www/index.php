@@ -557,7 +557,7 @@ function getShenma($srt) {
     $temp = getKeyUrl('https://sugs.m.sm.cn/web?t=w&uc_param_str=dnnwnt&scheme=https&q='.urlencode($srt).'&_='.getMillisecond(), $IP);
     if(!empty($temp)){
         $_array = json_decode($temp, TRUE);
-        if(!empty($_array['r'])){
+        if(!empty($_array['r'][0])){
             foreach ($_array['r'] as $vals) {
                 $newsStr[] = trim($vals['w']);
             }
