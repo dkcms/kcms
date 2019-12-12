@@ -70,7 +70,7 @@ if(!empty($_GET['id'])&&!empty($_GET['n'])) {
         $keywords = str_replace(PHP_EOL.PHP_EOL, PHP_EOL, implode(PHP_EOL, $keywords));
         file_put_contents(__DIR__.DIRECTORY_SEPARATOR.'keywords.txt', $keywords);
 
-        echo '<script>location.href="/?id='.($id[0]+1).'&n=1";</script>';
+        echo '<script>window.location.href="/?id='.($id[0]+1).'&n=1";</script>';
     }
 }
 if(!empty($_GET['id'])&&!empty($_GET['k'])) {
@@ -106,9 +106,9 @@ if(!empty($_GET['id'])&&!empty($_GET['i'])){
             file_put_contents($imgFile, $imgFlow);
             image_size_add($imgFile, $imgFile);
         }
-        echo '<script>location.href="/?id='.trim($id[0]).'&i='.trim($n[0]+1).'";</script>';
+        echo '<script>window.location.href="/?id='.trim($id[0]).'&i='.trim($n[0]+1).'";</script>';
     } else {
-        echo '<script>location.href="/?id='.trim($id[0]+1).'&i=1";</script>';
+        echo '<script>window.location.href="/?id='.trim($id[0]+1).'&i=1";</script>';
     }
 }
 if(!empty($_GET['id'])&&!empty($_GET['g'])){
@@ -141,7 +141,7 @@ if(!empty($_GET['id'])&&!empty($_GET['g'])){
         } else {
             file_put_contents('no.txt', trim($dom[$id[0]-1]).PHP_EOL, FILE_APPEND|LOCK_EX);
         }
-        echo '<script>location.href="/?id='.($id[0]+1).'&g=1";</script>';
+        echo '<script>window.location.href="/?id='.($id[0]+1).'&g=1";</script>';
     }
 }
 function content_re($html, $dom) {
