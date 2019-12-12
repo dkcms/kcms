@@ -1,4 +1,4 @@
-dingkaicid
+dingkaicid@
 
 PHP-Redis 扩展应用类
 （开始在 PHP 中使用 Redis 前， 请确保已经安装了 redis 服务及 PHP redis 驱动）
