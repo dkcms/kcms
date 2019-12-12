@@ -94,16 +94,17 @@ if(!empty($_GET['id'])&&!empty($_GET['i'])){
     preg_match('/^[0-9]{1,}$/', $_GET['id'], $id);
     preg_match('/^[0-9]{1,}$/', $_GET['i'], $n);
     $temp = getImgUrl('https://www.mzitu.com/'.$id[0].'/'.$n[0], $IP);
-    preg_match('/class="main-image".*?src="(.+?)"/is', $temp, $img);
-    preg_match('/class="main-image".*?alt="(.+?)"/is', $temp, $title);
-    if(!empty($img[1])){
+    preg_match('/class="main-image".*?src="(.+?)"/is', $temp[0], $img);
+    preg_match('/class="main-image".*?alt="(.+?)"/is', $temp[0], $title);
+    echo '正在采集第 '.$id[0].' 条第 '.$n[0].' 页数据';
+    if(!empty($temp[1])&&$temp[1]=='200'&&!empty($img[1])){
         $imgName = pathinfo($img[1]);
         $imgFlow = getImgUrl($img[1], $IP);
-        if(!empty($imgFlow)){
+        if(!empty($imgFlow[1])&&$imgFlow[1]=='200'&&!empty($imgFlow[0])){
 	    $imgDir = __DIR__.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$title[1].DIRECTORY_SEPARATOR;
             if(!is_dir($imgDir)) {mkdirs($imgDir);}
             $imgFile = $imgDir.md5($imgName['filename']).'.'.$imgName['extension'];
-            file_put_contents($imgFile, $imgFlow);
+            file_put_contents($imgFile, $imgFlow[0]);
             image_size_add($imgFile, $imgFile);
         }
         echo '<script>window.location.href="/?id='.trim($id[0]).'&i='.trim($n[0]+1).'";</script>';
@@ -112,6 +113,7 @@ if(!empty($_GET['id'])&&!empty($_GET['i'])){
     }
 }
 if(!empty($_GET['id'])&&!empty($_GET['g'])){
+    $dom = getTxt('domain.txt');
     preg_match('/^[0-9]{1,}$/', $_GET['id'], $id);
     echo '检测网站第 '.$id[0].' 条数据是否被墙';
     if(!empty($dom[$id[0]-1])){
@@ -134,9 +136,10 @@ if(!empty($_GET['id'])&&!empty($_GET['g'])){
         );
         curl_setopt_array($ch, $options);
         $result = curl_exec($ch);
+        $Code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         preg_match('/<title>(.+?)<\/title>/is', $result, $_array);
-        if(!empty($_array[1])){
+        if(!empty($Code)&&!empty($_array[1])&&$Code=='200'){
             file_put_contents('ok.txt', trim($_array[1]).'|'.trim($dom[$id[0]-1]).PHP_EOL, FILE_APPEND|LOCK_EX);
         } else {
             file_put_contents('no.txt', trim($dom[$id[0]-1]).PHP_EOL, FILE_APPEND|LOCK_EX);
@@ -473,9 +476,10 @@ function getCurlSrt($url, $randIP) {
         CURLOPT_HTTPHEADER => array('X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP),
     );
     curl_setopt_array($ch, $options);
-    $temp = curl_exec($ch);
+    $result = curl_exec($ch);
+    $Code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return $temp;
+    return array($result, $Code);
 }
 
 function getCookie($url, $randIP) {
@@ -507,26 +511,29 @@ function getCookie($url, $randIP) {
         CURLOPT_HTTPHEADER => array('Content-Type: text/plain', 'X-FORWARDED-FOR:' . $randIP, 'CLIENT-IP:' . $randIP),
     );
     curl_setopt_array($ch, $options);
-    $temp = curl_exec($ch);
+    $result = curl_exec($ch);
+    $Code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return $temp;
+    return array($result, $Code);
 }
 
 function getBaidu($srt) {
     $IP = getRandIP();
     $temp = getCookie('https://m.baidu.com/s?word='.$srt.'&ie=utf-8', $IP);
-    preg_match('/<title>(.+?)<\/title>/is', $temp, $_title);
+    preg_match('/<title>(.+?)<\/title>/is', $temp[0], $_title);
     if($_title[1] == '百度安全验证'){return getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1);}
-    preg_match_all('/B\.comm\.lid \= \"(.+?)\"/is', $temp, $qid);
-    preg_match_all('/Set-Cookie: (.+?);/is', $temp, $_array);
+    preg_match_all('/B\.comm\.lid \= \"(.+?)\"/is', $temp[0], $qid);
+    preg_match_all('/Set-Cookie: (.+?);/is', $temp[0], $_array);
     $_array = (!empty($qid[1][0])?'QID='.$qid[1][0].'|'.implode('|', $_array[1]):getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
     preg_match('/QID\=(.+?)\|/is', $_array, $qid);
     preg_match('/BAIDUID\=(.+?)FG\=1/is', $_array, $id);
     preg_match('/H_WISE_SIDS\=(.+?)\|/is', $_array, $sid);
     if(!empty($qid[1])) {
-        $_array = json_decode(getKeyUrl('https://m.baidu.com/rec?platform=wise&ms=1&lsAble=1&rset=rcmd&word='.$srt.'&qid='.urlencode($qid[1]).'&rq='.$srt.'&from=0&baiduid='.urlencode($id[1]).'FG=1&tn=&clientWidth=375&t='.getMillisecond().'&r='.mt_rand(2000,5000), $IP), TRUE);
+        $_array = getKeyUrl('https://m.baidu.com/rec?platform=wise&ms=1&lsAble=1&rset=rcmd&word='.$srt.'&qid='.urlencode($qid[1]).'&rq='.$srt.'&from=0&baiduid='.urlencode($id[1]).'FG=1&tn=&clientWidth=375&t='.getMillisecond().'&r='.mt_rand(2000,5000), $IP);
+        $Code = $_array[1];
+        $_array = json_decode($_array[0], TRUE);
     }
-    if(!empty($_array['rs']['rcmd']['list'])){
+    if(!empty($Code)&&$Code=='200'&&!empty($_array['rs']['rcmd']['list'])){
         foreach ($_array['rs']['rcmd']['list'] as $id => $val) {
             foreach ($val['data'] as $vals) {
                 if(!strstr($vals,';;')){
@@ -542,9 +549,11 @@ function getBaidu($srt) {
         }
     }
     if(!empty($sid[1])) {
-        $_array = json_decode(getKeyUrl('https://m.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=wise&from=wise_web&sugsid='.str_replace('_', ',', $sid[1]).'&net=&os=1&sp=null&rm_brand=0&wd='.$srt.'&lid='.urlencode($qid[1]).'&_='.getMillisecond(), $IP), TRUE);
+        $_array = getKeyUrl('https://m.baidu.com/sugrec?pre=1&p=3&ie=utf-8&json=1&prod=wise&from=wise_web&sugsid='.str_replace('_', ',', $sid[1]).'&net=&os=1&sp=null&rm_brand=0&wd='.$srt.'&lid='.urlencode($qid[1]).'&_='.getMillisecond(), $IP);
+        $Code = $_array[1];
+        $_array = json_decode($_array[0], TRUE);
     }
-    if(!empty($_array['g'])){
+    if(!empty($Code)&&$Code=='200'&&!empty($_array['g'])){
         foreach ($_array['g'] as $id => $val) {
             $newsStr[] = trim($val['q']);
         }
@@ -555,37 +564,39 @@ function getBaidu($srt) {
 function getShenma($srt) {
     $IP = getRandIP();
     $temp = getKeyUrl('https://sugs.m.sm.cn/web?t=w&uc_param_str=dnnwnt&scheme=https&q='.urlencode($srt).'&_='.getMillisecond(), $IP);
-    if(!empty($temp)){
-        $_array = json_decode($temp, TRUE);
+    if(!empty($temp[1])&&$temp[1]=='200'&&!empty($temp[0])){
+        $_array = json_decode($temp[0], TRUE);
         if(!empty($_array['r'][0])){
             foreach ($_array['r'] as $vals) {
                 $newsStr[] = trim($vals['w']);
             }
+            return $newsStr;
         } else {
             return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
         }
     }
-    return (!empty($newsStr) ? $newsStr : getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
+    return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
 }
 
 function getSocom($srt) {
     $IP = getRandIP();
     $temp = getCookie('https://m.so.com', $IP);
-    if(!empty($temp)){
-        preg_match('/encodeURIComponent\(\'(.+?)\'\)/is', $temp, $id);
+    if(!empty($temp[1])&&$temp[1]=='200'&&!empty($temp[0])){
+        preg_match('/encodeURIComponent\(\'(.+?)\'\)/is', $temp[0], $id);
         $_array = getKeyUrl('https://m.so.com/suggest/mso?src=mso&caller=strict&sensitive=strict&count=10&llbq='.urlencode($id[1]).'&kw='.$srt, $IP);
-        if(!empty($_array)){
-            $_array = json_decode($_array, TRUE);
+        if(!empty($_array[1])&&$_array[1]=='200'&&!empty($_array[0])){
+            $_array = json_decode($_array[0], TRUE);
             if(!empty($_array['data']['sug'])){
                 foreach ($_array['data']['sug'] as $vals) {
                     $newsStr[] = trim($vals['word']);
                 }
+                return $newsStr;
             } else {
                 return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
             }
         }
     }
-    return (!empty($newsStr) ? $newsStr : getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1));
+    return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
 }
 
 function getKeyUrl($url, $randIP) {
@@ -608,8 +619,9 @@ function getKeyUrl($url, $randIP) {
     );
     curl_setopt_array($ch, $options);
     $result = curl_exec ($ch);
+    $Code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return $result;
+    return array($result, $Code);
 }
 
 function getNews() {
@@ -617,17 +629,20 @@ function getNews() {
     $fileList = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'title.txt';
     if(!file_exists($fileList)||(time()-filemtime($fileList)) > 300) {
         $data = getCurlSrt('https://news.163.com/special/0001220O/news_json.js', $IP);
-        $data = mb_convert_encoding(trim($data), 'utf-8', mb_detect_encoding(trim($data), array('ASCII','UTF-8','GB2312','GBK','LATIN1','BIG5')));
-        preg_match_all('/{"c":(.+?),"t":"(.+?)","l":"(.+?)","p":"(.+?)"}/is', $data, $_array, PREG_SET_ORDER);
-        foreach ($_array as $val) {
-            $newsStr[] = trim($val[2]);
+        if(!empty($data[1])&&$data[1]=='200'){
+            $data = mb_convert_encoding(trim($data[0]), 'utf-8', mb_detect_encoding(trim($data[0]), array('ASCII','UTF-8','GB2312','GBK','LATIN1','BIG5')));
+            preg_match_all('/{"c":(.+?),"t":"(.+?)","l":"(.+?)","p":"(.+?)"}/is', $data, $_array, PREG_SET_ORDER);
+            foreach ($_array as $val) {
+                $newsStr[] = trim($val[2]);
+            }
+            if(!empty($newsStr[0])){
+                file_put_contents($fileList, implode(PHP_EOL, array_flip(array_flip($newsStr))), LOCK_EX);
+            }
+            return '本次共采集: '.count($newsStr).' 条';
         }
-        if(!empty($newsStr[0])){
-            file_put_contents($fileList, implode(PHP_EOL, array_flip(array_flip($newsStr))), LOCK_EX);
-        }
-        return '本次共采集: '.count($newsStr).' 条';
+        return getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1);
     } else {
-        return '采集任务完毕';
+        return getSrt2Unicode('&#37319;&#38598;&#23436;&#27605;',1);
     }
 }
 
@@ -660,8 +675,9 @@ function getImgUrl($url, $randIP) {
     );
     curl_setopt_array($ch, $options);
     $result = curl_exec ($ch);
+    $Code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    return $result;
+    return array($result, $Code);
 }
 
 function image_size_add($imgsrc, $imgdst) {
