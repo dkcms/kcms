@@ -1,4 +1,4 @@
-Outline的Access Key格式: ss://加密方式:密码@IP地址:端口
+Access Key格式: ss://加密方式:密码@IP地址:端口
 
 清屏命令
 $ clear
