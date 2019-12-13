@@ -573,8 +573,9 @@ function getSogou($srt) {
     preg_match('/pid\"\:\"(.+?)\"/is', $temp[0], $pid);
     preg_match('/sugsuv\=(.+?)\&sugtime/is', $temp[0], $sugsuv);
     preg_match('/suguuid\=(.+?)\&sugsuv/is', $temp[0], $suguuid);
+    if(empty($sugsuv[1])){return getSrt2Unicode('&#37319;&#38598;&#22833;&#36133;',1);}
     if(!empty($temp[1])&&$temp[1]=='200'&&!empty($temp[0])){
-        $_array = getKeyUrl('https://wap.sogou.com/web/sugg/'.urlencode($srt).'?sugsuv='.$sugsuv[1].'&suguuid='.$suguuid[1].'&sugtime='.getMillisecond().'&vr=1&s=1&cb=window.sug.keyword&source=wapsearch&pid='.$pid[1], $IP);
+        $_array = getKeyUrl('https://wap.sogou.com/web/sugg/'.urlencode($srt).'?sugsuv='.trim($sugsuv[1]).'&suguuid='.trim($suguuid[1]).'&sugtime='.getMillisecond().'&vr=1&s=1&cb=window.sug.keyword&source=wapsearch&pid='.trim($pid[1]), $IP);
         if(!empty($_array[1])&&$_array[1]=='200'&&!empty($_array[0])){
             preg_match('/window.sug.keyword\((.+?)\)/is', $_array[0], $_array);
             $_array = json_decode($_array[1], TRUE);
