@@ -52,7 +52,10 @@ if(!empty($_GET['id'])&&!empty($_GET['n'])) {
         do {
             $baidu = getBaidu(trim($data));
         } while ($baidu == '采集失败');
-        do {
+        do{
+            $sogou = getSogou(trim($data));
+        } while ($sogou == '采集失败');
+	do {
             $senma = getShenma(trim($data));
         } while ($senma == '采集失败');
         do {
@@ -61,7 +64,10 @@ if(!empty($_GET['id'])&&!empty($_GET['n'])) {
         if(is_array($baidu)){
             $keywords = array_values(array_flip(array_flip(array_merge($keywords, $baidu))));
         }
-        if(is_array($senma)){
+        if(is_array($sogou)){
+            $keywords = array_values(array_flip(array_flip(array_merge($keywords, $sogou))));
+        }
+	if(is_array($senma)){
             $keywords = array_values(array_flip(array_flip(array_merge($keywords, $senma))));
         }
         if(is_array($socom)){
@@ -561,18 +567,45 @@ function getBaidu($srt) {
     return (!empty($newsStr)?array_values(array_flip(array_flip($newsStr))):getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1));
 }
 
+function getSogou($srt) {
+    $IP = getRandIP();
+    $temp = getCookie('https://wap.sogou.com/', $IP);
+    preg_match('/pid\"\:\"(.+?)\"/is', $temp[0], $pid);
+    preg_match('/sugsuv\=(.+?)\&sugtime/is', $temp[0], $sugsuv);
+    preg_match('/suguuid\=(.+?)\&sugsuv/is', $temp[0], $suguuid);
+    if(!empty($temp[1])&&$temp[1]=='200'&&!empty($temp[0])){
+        $_array = getKeyUrl('https://wap.sogou.com/web/sugg/'.urlencode($srt).'?sugsuv='.$sugsuv[1].'&suguuid='.$suguuid[1].'&sugtime='.getMillisecond().'&vr=1&s=1&cb=window.sug.keyword&source=wapsearch&pid='.$pid[1], $IP);
+        if(!empty($_array[1])&&$_array[1]=='200'&&!empty($_array[0])){
+            preg_match('/window.sug.keyword\((.+?)\)/is', $_array[0], $_array);
+            $_array = json_decode($_array[1], TRUE);
+            if(!empty($_array['s'][0])){
+                foreach ($_array['s'] as $vals) {
+                    $newsStr[] = trim($vals['q']);
+                }
+                return $newsStr;
+            } else {
+                return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
+            }
+        }
+    }
+    return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
+}
+
 function getShenma($srt) {
     $IP = getRandIP();
-    $temp = getKeyUrl('https://sugs.m.sm.cn/web?t=w&uc_param_str=dnnwnt&scheme=https&q='.urlencode($srt).'&_='.getMillisecond(), $IP);
+    $temp = getCookie('https://m.sm.cn/', $IP);
     if(!empty($temp[1])&&$temp[1]=='200'&&!empty($temp[0])){
-        $_array = json_decode($temp[0], TRUE);
-        if(!empty($_array['r'][0])){
-            foreach ($_array['r'] as $vals) {
-                $newsStr[] = trim($vals['w']);
+        $_array = getKeyUrl('https://sugs.m.sm.cn/web?t=w&uc_param_str=dnnwnt&scheme=https&q='.urlencode($srt).'&_='.getMillisecond(), $IP);
+        if(!empty($_array[1])&&$_array[1]=='200'&&!empty($_array[0])){
+            $_array = json_decode($_array[0], TRUE);
+            if(!empty($_array['r'][0])){
+                foreach ($_array['r'] as $vals) {
+                    $newsStr[] = trim($vals['w']);
+                }
+                return $newsStr;
+            } else {
+                return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
             }
-            return $newsStr;
-        } else {
-            return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
         }
     }
     return getSrt2Unicode('&#24050;&#34987;&#23631;&#34109;',1);
@@ -580,7 +613,7 @@ function getShenma($srt) {
 
 function getSocom($srt) {
     $IP = getRandIP();
-    $temp = getCookie('https://m.so.com', $IP);
+    $temp = getCookie('https://m.so.com/', $IP);
     if(!empty($temp[1])&&$temp[1]=='200'&&!empty($temp[0])){
         preg_match('/encodeURIComponent\(\'(.+?)\'\)/is', $temp[0], $id);
         $_array = getKeyUrl('https://m.so.com/suggest/mso?src=mso&caller=strict&sensitive=strict&count=10&llbq='.urlencode($id[1]).'&kw='.$srt, $IP);
