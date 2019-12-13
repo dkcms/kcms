@@ -180,6 +180,7 @@ function getHost() {
 
 function getDomain($dom) {
     preg_match('/[\w][\w-]*\.(?:com\.cn|com|cn|co|net|org|gov|cc|biz|info)(\/|$)/is', getHost(), $domain);
+    foreach($dom as $i => $v) {$dom[$i] = trim($v);}
     if(in_array($domain[0], $dom)) {
         $http_type = ((isset($_SERVER['HTTPS'])&&$_SERVER['HTTPS']=='on')||(isset($_SERVER['HTTP_X_FORWARDED_PROTO'])&&$_SERVER['HTTP_X_FORWARDED_PROTO']=='https'))?'https://':'http://';
         $domDirs = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR.trim($domain[0]).DIRECTORY_SEPARATOR;
