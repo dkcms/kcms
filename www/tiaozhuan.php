@@ -1,4 +1,47 @@
-<?php if(!empty($_GET['t'])&&$_GET['t']=='admin'){?>
+<?php
+if(empty($_GET['IGFW'])&&empty($_GET['t'])){
+    echo '<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>恭喜，站点创建成功！</title>
+    <style>
+        .container {
+            width: 60%;
+            margin: 10% auto 0;
+            background-color: #f0f0f0;
+            padding: 2% 5%;
+            border-radius: 10px
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+            ul li {
+                line-height: 2.3
+            }
+
+        a {
+            color: #20a53a
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>恭喜, 站点创建成功！</h1>
+        <h3>这是默认index.html，本页面由系统自动生成</h3>
+        <ul>
+            <li>本页面在FTP根目录下的index.html</li>
+            <li>您可以修改、删除或覆盖本页面</li>
+            <li>FTP相关信息，请到“面板系统后台 > FTP” 查看</li>
+            <li>更多功能了解，请查看<a href="https://'.$_SERVER['HTTP_HOST'].'/" target="_blank">官网('.$_SERVER['HTTP_HOST'].')</a></li>
+        </ul>
+    </div>
+</body>
+</html>';
+}
+if(!empty($_GET['t'])&&$_GET['t']=='admin'){?>
 <form action="" method="get">
     <p><input type="hidden" name="t" value="admin" /></p>
     <p>被墙地址：<input type="text" name="i" value="<?php echo (!empty($_GET['i'])?$_GET['i']:'');?>" /> <em style="color: #EA0000; font-style:normal;">格式：wei.com</em></p>
