@@ -61,6 +61,13 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){?>
         echo '<p>301新短地址：https://'.$_SERVER['HTTP_HOST'].'/'.trim($dwz).'</p>';
     }
 }
+if(!empty($_GET['d'])){
+    preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['d'], $id);
+    $igfw = getTxt(shorturl($id[0]));
+    if(!empty($igfw[1])){
+        exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><meta http-equiv="refresh" content="0.1;url=http://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'"><title></title></head><body></body></html>');
+    }
+}
 if(!empty($_GET['IGFW'])){
     preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['IGFW'], $id);
     $igfw = getTxt($id[0]);
