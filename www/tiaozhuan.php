@@ -1,5 +1,5 @@
 <?php
-if(empty($_GET['IGFW'])&&empty($_GET['t'])){
+if(empty($_GET['igfw'])&&empty($_GET['t'])){
     echo '<!doctype html>
 <html>
 <head>
@@ -68,10 +68,10 @@ if(!empty($_GET['d'])){
         exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><meta http-equiv="refresh" content="0.1;url=http://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'"><title></title></head><body></body></html>');
     }
 }
-if(!empty($_GET['IGFW'])){
-    preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['IGFW'], $id);
+if(!empty($_GET['igfw'])){
+    preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['igfw'], $id);
     $igfw = getTxt($id[0]);
-    if(!empty($igfw[0])&&$igfw[0]==$_GET['IGFW']){
+    if(!empty($igfw[0])&&$igfw[0]==$_GET['igfw']){
         if(!empty($_POST['pass'])){
             exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><meta http-equiv="refresh" content="0.1;url=https://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
         }
@@ -224,11 +224,11 @@ function mkdirs($path) {
  * .htaccess
  * RewriteEngine On
  * RewriteBase / 
- * RewriteRule ^([a-zA-z0-9]{1,})$ index.php?IGFW=$1
+ * RewriteRule ^([a-zA-z0-9]{1,})$ index.php?igfw=$1
  * 
  * nginx.conf
  * location / {
- *   rewrite "^/([a-zA-z0-9]{1,})$" /index.php?IGFW=$1;
+ *   rewrite "^/([a-zA-z0-9]{1,})$" /index.php?igfw=$1;
  * }
  * 
  */
