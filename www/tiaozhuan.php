@@ -65,7 +65,7 @@ if(!empty($_GET['d'])){
     preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['d'], $id);
     $igfw = getTxt(shorturl($id[0]));
     if(!empty($igfw[1])){
-        exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><meta http-equiv="refresh" content="0.1;url=http://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'"><title></title></head><body></body></html>');
+        exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'http://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'\');</script><meta http-equiv="refresh" content="0.1;url=http://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'"><title></title></head><body></body></html>');
     }
 }
 if(!empty($_GET['igfw'])){
@@ -230,6 +230,8 @@ function mkdirs($path) {
  * location / {
  *   rewrite "^/([a-zA-z0-9]{1,})$" /index.php?igfw=$1;
  * }
+ * 
+ * rewrite ^/(.*)$ https://domain.com/?d=$host&f=$1 permanent;
  * 
  */
  
