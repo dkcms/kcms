@@ -117,6 +117,9 @@ firewall-cmd --query-port=38023/tcp
 #重启防火墙
 firewall-cmd --reload
 
+#锁定不得任意更动
+chattr +i /etc/shadowsocks.json
+
 #清空当前缓存中的命令
 history -c
 
