@@ -1,5 +1,5 @@
 <?php
-if(empty($_GET['igfw'])&&empty($_GET['t'])){
+if(empty($_GET['igfw'])&&empty($_GET['t'])&&empty($_GET['d'])){
     echo '<!doctype html>
 <html>
 <head>
@@ -73,7 +73,7 @@ if(!empty($_GET['igfw'])){
     $igfw = getTxt($id[0]);
     if(!empty($igfw[0])&&$igfw[0]==$_GET['igfw']){
         if(!empty($_POST['pass'])){
-            exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><meta http-equiv="refresh" content="0.1;url=https://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
+            exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'https://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'\');</script><meta http-equiv="refresh" content="0.1;url=https://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
         }
         echo '<!DOCTYPE HTML>
 <html lang="en-US">
