@@ -65,7 +65,7 @@ if(!empty($_GET['d'])){
     preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['d'], $id);
     $igfw = getTxt(shorturl($id[0]));
     if(!empty($igfw[1])){
-        exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'http://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'\');</script><meta http-equiv="refresh" content="0.1;url=http://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'"><title></title></head><body></body></html>');
+        exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'https://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'\');</script><meta http-equiv="refresh" content="0.1;url=https://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'"><title></title></head><body></body></html>');
     }
 }
 if(!empty($_GET['igfw'])){
@@ -73,7 +73,7 @@ if(!empty($_GET['igfw'])){
     $igfw = getTxt($id[0]);
     if(!empty($igfw[0])&&$igfw[0]==$_GET['igfw']){
         if(!empty($_POST['pass'])){
-            exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'https://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'\');</script><meta http-equiv="refresh" content="0.1;url=https://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
+            exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'\');</script><meta http-equiv="refresh" content="0.1;url=http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
         }
         echo '<!DOCTYPE HTML>
 <html lang="en-US">
