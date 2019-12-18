@@ -281,6 +281,14 @@ function getHttpType(){
  * 
  * systemctl start nginx.service
  * 
+ * systemctl start nginx.service
+ * 
+ * systemctl stop nginx.service
+ * 
+ * systemctl reload nginx.service
+ * 
+ * systemctl status nginx.service
+ * 
  * systemctl enable nginx.service
  * 
  * robots.txt
