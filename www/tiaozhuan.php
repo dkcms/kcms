@@ -41,39 +41,88 @@ if(empty($_GET['igfw'])&&empty($_GET['t'])&&empty($_GET['d'])){
 </body>
 </html>';
 }
-if(!empty($_GET['t'])&&$_GET['t']=='admin'){?>
-<form action="" method="get">
+if(!empty($_GET['t'])&&$_GET['t']=='admin'){
+    session_start();
+    $inToken = md5($_SERVER['HTTP_HOST'].time());
+    if(empty($_SESSION['token'])) {
+        $_SESSION['token'] = $inToken;
+    } else {
+        $inToken = $_SESSION['token'];
+    }
+	if(!empty($_POST['token'])&&$_POST['token']==$_SESSION['token']&&!empty($_POST['p'])&&$_POST['p']=='abc123'){
+        $_SESSION['u'] = 1;$_SESSION['token'] = md5($_SERVER['HTTP_HOST'].time());$inToken = $_SESSION['token'];
+        $_SESSION['time'] = time() + 600;
+    }
+    if(empty($_SESSION['u'])){
+?>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+</head>
+<body>
+<form action="" method="post">
+    <input type="text" hidden="hidden" name="token" value="<?php echo $inToken; ?>" />
+    <p>管理密码：<input type="password" name="p" /></p>
+    <p><input type="submit" value="提交登陆" /></p>
+</form>
+</body>
+</html>
+<?php 
+    } else {
+    if($_SESSION['time']<time()){
+        $_SESSION['u'] = 0;
+        exit('<script>window.location.replace(\''.getHttpType().$_SERVER['HTTP_HOST'].'/?t=admin\');</script>');
+    }
+?>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+</head>
+<body>
+<form action="" method="post">
     <p><input type="hidden" name="t" value="admin" /></p>
-    <p>被墙地址：<input type="text" name="i" value="<?php echo (!empty($_GET['i'])?$_GET['i']:'');?>" /> <em style="color: #EA0000; font-style:normal;">格式：wei.com</em></p>
-    <p>新域地址：<input type="text" name="n" value="<?php echo (!empty($_GET['n'])?$_GET['n']:'');?>" /> <em style="color: #EA0000; font-style:normal;">格式：mei.com</em></p>
+    <p><input type="hidden" name="token" value="<?php echo $inToken; ?>" /></p>
+    <p>被墙地址：<input type="text" name="i" /> <em style="color: #EA0000; font-style:normal;">格式：wei.com</em></p>
+    <p>新域地址：<input type="text" name="n" /> <em style="color: #EA0000; font-style:normal;">格式：mei.com</em></p>
     <p><input type="submit" value="提交地址" /></p>
 </form>
+</body>
+</html>
 <?php 
-    if(!empty($_GET['i'])&&!empty($_GET['n'])){
-        preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['i'], $i);
-        preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['n'], $n);
-        if(empty($i[0])){exit('<em style="color: #EA0000; font-style:normal;">被墙域名</em> 格式不正确');}
-        if(empty($n[0])){exit('<em style="color: #EA0000; font-style:normal;">新域地址</em> 格式不正确');}
-        $gfw = $i[0];$dwz = shorturl($gfw);$new = $n[0];
-        $dirJson = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR;
-        if(!is_dir($dirJson)) {mkdirs($dirJson);}
-        file_put_contents($dirJson.$dwz.'.json', serialize(array(trim($dwz),trim($gfw),trim($new))));
-        echo '<p>301新短地址：https://'.$_SERVER['HTTP_HOST'].'/'.trim($dwz).'</p>';
+        if(!empty($_POST['token'])&&$_POST['token']==$_SESSION['token']&&!empty($_SESSION['u'])&&!empty($_POST['i'])&&!empty($_POST['n'])&&$_POST['t']=='admin'){
+            preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_POST['i'], $i);
+            preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_POST['n'], $n);
+            if(empty($i[0])){exit('<em style="color: #EA0000; font-style:normal;">被墙域名</em> 格式不正确');}
+            if(empty($n[0])){exit('<em style="color: #EA0000; font-style:normal;">新域地址</em> 格式不正确');}
+            $gfw = $i[0];$dwz = shorturl($gfw);$new = $n[0];
+            $dirJson = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR;$_SESSION['time']=time()+600;
+            if(!is_dir($dirJson)) {mkdirs($dirJson);}$_SESSION['token'] = md5($_SERVER['HTTP_HOST'].time());
+            file_put_contents($dirJson.$dwz.'.json', serialize(array(trim($dwz),trim($gfw),trim($new))));
+            $_SESSION['url'] = $gourl = getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($dwz);
+            echo '<script>window.location.replace(\''.getHttpType().$_SERVER['HTTP_HOST'].'/?t=admin\');</script>';
+        }
+        echo !empty($_SESSION['url'])?'<p>301新短地址：'.$_SESSION['url'].'</p>':'';
     }
 }
+
 if(!empty($_GET['d'])){
     preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['d'], $id);
     $igfw = getTxt(shorturl($id[0]));
     if(!empty($igfw[1])){
-        exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'https://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'\');</script><meta http-equiv="refresh" content="0.1;url=https://'.$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'"><title></title></head><body></body></html>');
+        exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\''.getHttpType().$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'\');</script><meta http-equiv="refresh" content="0.1;url='.getHttpType().$_SERVER['HTTP_HOST'].'/'.shorturl($id[0]).'"><title></title></head><body></body></html>');
     }
 }
+
 if(!empty($_GET['igfw'])){
     preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_GET['igfw'], $id);
     $igfw = getTxt($id[0]);
     if(!empty($igfw[0])&&$igfw[0]==$_GET['igfw']){
         if(!empty($_POST['pass'])){
-            exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'\');</script><meta http-equiv="refresh" content="0.1;url=http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:'https://'.$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
+            exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'\');</script><meta http-equiv="refresh" content="0.1;url=http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
         }
         echo '<!DOCTYPE HTML>
 <html lang="en-US">
@@ -180,6 +229,7 @@ if(!empty($_GET['igfw'])){
 </html>';
     }
 }
+
 function code62($x) {
     $show = '';
     while($x > 0) {
@@ -194,16 +244,19 @@ function code62($x) {
     }
     return $show;
 }
+
 function shorturl($url) {
     $url = crc32($url);
     $result = sprintf("%u", $url);
     return code62($result);
 }
+
 function getTxt($file) {
     $_getFile = @file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.$file.'.json');
     if(empty($_getFile)){return array($file, 'www.baidu.com', 'www.baidu.com');}
     return unserialize($_getFile);
 }
+
 function mkdirs($path) {
     if(!is_dir($path)) {
         mkdirs(dirname($path));
@@ -214,10 +267,15 @@ function mkdirs($path) {
     return true;
 }
 
+function getHttpType(){
+    $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
+    return $http_type;
+}
+
 /**
  * cloudflare.com
  * 
- * rpm -Uvh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+ * rpm -Uvh https://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
  * 
  * yum install -y nginx
  * 
