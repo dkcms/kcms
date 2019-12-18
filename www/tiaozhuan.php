@@ -51,7 +51,7 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){
     }
 	if(!empty($_POST['token'])&&$_POST['token']==$_SESSION['token']&&!empty($_POST['p'])&&$_POST['p']=='abc123'){
         $_SESSION['u'] = 1;$_SESSION['token'] = md5($_SERVER['HTTP_HOST'].time());$inToken = $_SESSION['token'];
-        $_SESSION['time'] = time() + 600;
+        $_SESSION['time'] = time() + 60;
     }
     if(empty($_SESSION['u'])){
 ?>
@@ -93,19 +93,38 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){
 </body>
 </html>
 <?php 
+        $dirJson = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR;
         if(!empty($_POST['token'])&&$_POST['token']==$_SESSION['token']&&!empty($_SESSION['u'])&&!empty($_POST['i'])&&!empty($_POST['n'])&&$_POST['t']=='admin'){
             preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_POST['i'], $i);
             preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_POST['n'], $n);
             if(empty($i[0])){exit('<em style="color: #EA0000; font-style:normal;">被墙域名</em> 格式不正确');}
             if(empty($n[0])){exit('<em style="color: #EA0000; font-style:normal;">新域地址</em> 格式不正确');}
-            $gfw = $i[0];$dwz = shorturl($gfw);$new = $n[0];
-            $dirJson = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR;$_SESSION['time']=time()+600;
+            $gfw = $i[0];$_SESSION['url'] = $dwz = trim(shorturl($gfw));$new = $n[0];$_SESSION['time']=time()+60;
             if(!is_dir($dirJson)) {mkdirs($dirJson);}$_SESSION['token'] = md5($_SERVER['HTTP_HOST'].time());
             file_put_contents($dirJson.$dwz.'.json', serialize(array(trim($dwz),trim($gfw),trim($new))));
-            $_SESSION['url'] = $gourl = getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($dwz);
+            file_put_contents($dirJson.'dwz.txt', trim($dwz).','.trim($gfw).','.trim($new).PHP_EOL, FILE_APPEND);
             echo '<script>window.location.replace(\''.getHttpType().$_SERVER['HTTP_HOST'].'/?t=admin\');</script>';
         }
-        echo !empty($_SESSION['url'])?'<p>301新短地址：'.$_SESSION['url'].'</p>':'';
+        echo !empty($_SESSION['url'])?'<p>301新短地址：'.getHttpType().$_SERVER['HTTP_HOST'].'/'.$_SESSION['url'].'</p>':'';
+        $_array = @file($dirJson.'dwz.txt');
+        if(!empty($_array)){
+            $table = '<table width="50%" cellpadding="0">';
+            $table .= '<tr style="text-align: center;"><td>排序</td><td>短地址</td><td>老域名</td><td>新域名</td></tr>';
+            foreach($_array as $i => $key){
+                $str = explode(",", $key);
+                $table .= '<tr style="text-align: center;">';
+                $table .= '<td>'.($i+1).'</td>';
+                foreach($str as $id => $url){
+                    if($id == '0'){
+                        $table .= '<td>'.getHttpType().$_SERVER['HTTP_HOST'].'/'.$url.'</td>';
+                    } else {
+                        $table .= '<td>'.$url.'</td>';
+                    }
+				}
+                $table .= '</tr>';
+            }
+            echo $table .= '</table>';
+		}
     }
 }
 
@@ -122,7 +141,7 @@ if(!empty($_GET['igfw'])){
     $igfw = getTxt($id[0]);
     if(!empty($igfw[0])&&$igfw[0]==$_GET['igfw']){
         if(!empty($_POST['pass'])){
-            exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'\');</script><meta http-equiv="refresh" content="0.1;url=http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='www.baidu.com'?'s':'').'?ie=utf-8&wd=site%3A'.(trim($igfw[2])=='www.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
+            exit('<html><head><meta http-equiv="Content-Language" content="zh-CN"><meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8"><script>window.location.replace(\'http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='m.baidu.com'?'s':'').'?ie=utf-8&word=site%3A'.(trim($igfw[2])=='m.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'\');</script><meta http-equiv="refresh" content="0.1;url=http://'.trim($igfw[2]).'/'.(trim($igfw[2])=='m.baidu.com'?'s':'').'?ie=utf-8&word=site%3A'.(trim($igfw[2])=='m.baidu.com'?$_SERVER['HTTP_HOST']:getHttpType().$_SERVER['HTTP_HOST'].'/'.trim($igfw[0])).'"><title></title></head><body></body></html>');
         }
         echo '<!DOCTYPE HTML>
 <html lang="en-US">
@@ -246,6 +265,7 @@ function code62($x) {
 }
 
 function shorturl($url) {
+    $url = md5($url);
     $url = crc32($url);
     $result = sprintf("%u", $url);
     return code62($result);
@@ -253,7 +273,7 @@ function shorturl($url) {
 
 function getTxt($file) {
     $_getFile = @file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.$file.'.json');
-    if(empty($_getFile)){return array($file, 'www.baidu.com', 'www.baidu.com');}
+    if(empty($_getFile)){return array($file, 'm.baidu.com', 'm.baidu.com');}
     return unserialize($_getFile);
 }
 
@@ -280,14 +300,6 @@ function getHttpType(){
  * yum install -y nginx
  * 
  * systemctl start nginx.service
- * 
- * systemctl start nginx.service
- * 
- * systemctl stop nginx.service
- * 
- * systemctl reload nginx.service
- * 
- * systemctl status nginx.service
  * 
  * systemctl enable nginx.service
  * 
