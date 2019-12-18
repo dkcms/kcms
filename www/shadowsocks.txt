@@ -6,6 +6,109 @@ $ clear
 清空历史命令
 $ echo > .bash_history
 
+chown -R www:www /home/WebHost/
+
+return 301 https://$host$request_uri;
+
+rewrite ^(.*)$  https://$host$1 permanent;
+
+cat /dev/null > /var/log/rsyncd.log 
+
+查看CentOS版本
+# cat /etc/redhat-release
+
+查看当前启动的网络连接
+nmcli  connection show
+
+更改dns
+nmcli con mod eth0 ipv4.dns "8.8.8.8  114.114.114.114"
+
+配置生效
+nmcli con up eth0
+
+禁用selinux
+# vi /etc/selinux/config
+SELINUX=disabled
+
+# vi /etc/ssh/sshd_config
+Port 22                                     # ssh端口
+ListenAddress 192.168.0.1       # 对于在服务器上安装了多个网卡或配置多个IP地址的情况，设定sshd只在其中一个指定的接口地址监听
+AllowUsers  *@10.138.*.*        # 仅允许 10.138.0.0/16 网段所有用户通过ssh访问
+AllowUsers  normal                 # 只允许这个用户远程登录
+AllowTcpForwarding no          # 禁止空密码登录
+X11Forwarding no                  # 关闭X11Forwarding，防止会话被劫持
+PermitEmptyPasswords no      # 允许使用空密码
+Protocol 2                                # 禁止使用版本1协议
+MaxStartups 5                         # 增加SSH终端连接数最大为1000个
+LoginGraceTime 20                 # 在20秒内不能完成登录，则断开连接
+
+systemctl restart sshd.service
+
+账户安全锁定多余帐号方法
+# cat /etc/passwd
+# cat /etc/shadow
+
+# passwd -l <用户名>    # 锁定不必要的账号
+# passwd -u <用户名>   # 解锁需要恢复的账号
+
+设置系统口令策略
+# cat /etc/login.defs|grep PASS  # 查看密码策略设置
+
+#vi /etc/login.defs修改配置文件
+PASS_MAX_DAYS   90        #新建用户的密码最长使用天数
+PASS_MIN_DAYS   0         #新建用户的密码最短使用天数
+PASS_WARN_AGE   7         #新建用户的密码到期提前提醒天数
+PASS_MIN_LEN    9         #最小密码长度9
+
+检查shadow中空口令帐号
+# awk -F: '($2 == "") { print $1 }' /etc/shadow
+
+用户鉴别设置帐户锁定登录失败锁定次数、锁定时间
+# cat /etc/pam.d/system-auth   查看有无auth required pam_tally.so条目的设置
+# vi /etc/pam.d/system-auth
+auth required pam_tally.so onerr=fail deny=6 unlock_time=300  设置为密码连续错误6次锁定，锁定时间300秒
+解锁用户 faillog  -u  <用户名>  -r
+
+修改帐户TMOUT值，设置自动注销时间
+检查方法：
+# cat /etc/profile    # 查看有无TMOUT的设置
+# vi /etc/profile
+export TMOUT=600    # 无操作600秒后自动退出
+
+设置Bash保留历史命令的条数
+# cat /etc/profile|grep HISTSIZE=
+# cat /etc/profile|grep HISTFILESIZE=    查看保留历史命令的条数
+# vi /etc/profile
+修改 HISTSIZE=5 和 HISTFILESIZE=5 即保留最新执行的5条命令
+
+防止IP SPOOF攻击
+# vi /etc/host.conf
+nospoof on
+
+禁止被 ping 有则修改，无则添加
+# vi /etc/sysctl.conf
+et.ipv4.icmp_echo_ignore_all=0
+
+防火墙禁止被ping
+# firewall-cmd --permanent --add-rich-rule='rule protocol value=icmp drop'
+# firewall-cmd --reload
+
+编码设置，删除原有，添加如下内容
+# vi /etc/locale.conf
+LANG=zh_CN.utf8 //中文界面
+LC_MESSAGES=en_US.utf8 //英文提示
+
+在linux系统中，系统运行所必须的服务
+服务名称 	说明
+acpid 	用于电源管理，对于笔记本和台式电脑很重要
+apmd 	高级电源能源管理服务，可用于监控电脑
+kudzu 	检测硬件是否变化的服务
+crond 	为Linux下自动安排的进程提供运行服务
+iptables/firewall 	Linux内置的防火墙
+xinetd 	支持多种网络服务的核心守护进程
+syslog 	记录系统的日志服务
+network 	网络服务，要用网必须启动这个服务
+
 客户端 Android 下载
 https://github.com/shadowsocks/shadowsocks-android/releases
  
