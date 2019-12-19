@@ -47,7 +47,7 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){
 <form action="" method="post">
     <p><input type="hidden" name="t" value="admin" /></p>
     <p><input type="hidden" name="token" value="<?php echo $inToken; ?>" /></p>
-    <p>被墙地址：<input type="text" name="i" /> <em style="color: #EA0000; font-style:normal;">格式：wei.com</em></p>
+    <p>污染地址：<input type="text" name="i" /> <em style="color: #EA0000; font-style:normal;">格式：wei.com</em></p>
     <p>新域地址：<input type="text" name="n" /> <em style="color: #EA0000; font-style:normal;">格式：mei.com</em></p>
     <p><input type="submit" value="提交地址" /></p>
 </form>
@@ -58,7 +58,7 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){
         if(!empty($_POST['token'])&&$_POST['token']==$_SESSION['token']&&!empty($_SESSION['u'])&&!empty($_POST['i'])&&!empty($_POST['n'])&&$_POST['t']=='admin'){
             preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_POST['i'], $i);
             preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_POST['n'], $n);
-            if(empty($i[0])){exit('<em style="color: #EA0000; font-style:normal;">被墙域名</em> 格式不正确');}
+            if(empty($i[0])){exit('<em style="color: #EA0000; font-style:normal;">污染域名</em> 格式不正确');}
             if(empty($n[0])){exit('<em style="color: #EA0000; font-style:normal;">新域地址</em> 格式不正确');}
             $gfw = $i[0];$_SESSION['url'] = $dwz = trim(shorturl($gfw));$new = $n[0];$_SESSION['time']=time()+600;
             if(!is_dir($dirJson)) {mkdirs($dirJson);}$_SESSION['token'] = md5($_SERVER['HTTP_HOST'].time());
