@@ -51,7 +51,7 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){
     }
 	if(!empty($_POST['token'])&&$_POST['token']==$_SESSION['token']&&!empty($_POST['p'])&&$_POST['p']=='abc123'){
         $_SESSION['u'] = 1;$_SESSION['token'] = md5($_SERVER['HTTP_HOST'].time());$inToken = $_SESSION['token'];
-        $_SESSION['time'] = time() + 60;
+        $_SESSION['time'] = time() + 600;
     }
     if(empty($_SESSION['u'])){
 ?>
@@ -99,7 +99,7 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){
             preg_match('/^[a-zA-z0-9\.\-\/]{1,}$/', $_POST['n'], $n);
             if(empty($i[0])){exit('<em style="color: #EA0000; font-style:normal;">被墙域名</em> 格式不正确');}
             if(empty($n[0])){exit('<em style="color: #EA0000; font-style:normal;">新域地址</em> 格式不正确');}
-            $gfw = $i[0];$_SESSION['url'] = $dwz = trim(shorturl($gfw));$new = $n[0];$_SESSION['time']=time()+60;
+            $gfw = $i[0];$_SESSION['url'] = $dwz = trim(shorturl($gfw));$new = $n[0];$_SESSION['time']=time()+600;
             if(!is_dir($dirJson)) {mkdirs($dirJson);}$_SESSION['token'] = md5($_SERVER['HTTP_HOST'].time());
             file_put_contents($dirJson.$dwz.'.json', serialize(array(trim($dwz),trim($gfw),trim($new))));
             file_put_contents($dirJson.'dwz.txt', trim($dwz).','.trim($gfw).','.trim($new).PHP_EOL, FILE_APPEND);
