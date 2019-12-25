@@ -134,7 +134,7 @@ named -gc /usr/local/named/etc/named.conf
 提示: zone example.com/IN: loaded serial 4   OK
 
 开机启动
-# vi /usr/lib/systemd/system/named.service
+# vi /etc/systemd/system/named.service
 
 [Unit]
 Description=Berkeley Internet Name Domain (DNS)
