@@ -148,6 +148,9 @@ PrivateTmp=true
 ExecStart=/usr/sbin/named -c /usr/local/named/etc/named.conf
 Restart=on-abort
 
+[Install]
+WantedBy=multi-user.target
+
 # 设置开机自启命令
 $ systemctl enable named
 
