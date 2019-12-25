@@ -151,6 +151,9 @@ Restart=on-abort
 [Install]
 WantedBy=multi-user.target
 
+权限更改
+chmod 754 /etc/systemd/system/named.service
+
 # 设置开机自启命令
 $ systemctl enable named
 
