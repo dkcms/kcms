@@ -6,6 +6,7 @@ $header = array(
 );
 
 $domain = file(__DIR__.DIRECTORY_SEPARATOR.'dom'.DIRECTORY_SEPARATOR.'domain.txt');
+
 $record = file(__DIR__.DIRECTORY_SEPARATOR.'dom'.DIRECTORY_SEPARATOR.'record.txt');
 
 // 删除域名
