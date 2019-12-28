@@ -20,7 +20,7 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){
 <html>
 <head>
 <meta charset="utf-8">
-<title></title>
+<title>document</title>
 </head>
 <body>
 <form action="" method="post">
@@ -51,8 +51,6 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){
     <p>新域地址：<input type="text" name="n" /> <em style="color: #EA0000; font-style:normal;">格式：mei.com</em></p>
     <p><input type="submit" value="提交地址" /></p>
 </form>
-</body>
-</html>
 <?php 
         $dirJson = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR;
         if(!empty($_POST['token'])&&$_POST['token']==$_SESSION['token']&&!empty($_SESSION['u'])&&!empty($_POST['i'])&&!empty($_POST['n'])&&$_POST['t']=='admin'){
@@ -63,29 +61,30 @@ if(!empty($_GET['t'])&&$_GET['t']=='admin'){
             $gfw = $i[0];$_SESSION['url'] = $dwz = trim(shorturl($gfw));$new = $n[0];$_SESSION['time']=time()+600;
             if(!is_dir($dirJson)) {mkdirs($dirJson);}$_SESSION['token'] = md5($_SERVER['HTTP_HOST'].time());
             file_put_contents($dirJson.$dwz.'.json', serialize(array(trim($dwz),trim($gfw),trim($new))));
-            file_put_contents($dirJson.'dwz.txt', trim($dwz).','.trim($gfw).','.trim($new).PHP_EOL, FILE_APPEND);
             echo '<script>window.location.replace(\''.getHttpType().$_SERVER['HTTP_HOST'].'/?t=admin\');</script>';
         }
         echo !empty($_SESSION['url'])?'<p>301新短地址：'.getHttpType().$_SERVER['HTTP_HOST'].'/'.$_SESSION['url'].'</p>':'';
-        $_array = @file($dirJson.'dwz.txt');
+        $file = getFileAll();
+        foreach($file as $i => $key){
+            $_array[] = getTxt(substr($file[$i],0,strpos($file[$i], '.')));
+        }
         if(!empty($_array)){
             $table = '<table width="50%" cellpadding="0">';
             $table .= '<tr style="text-align: center;"><td>排序</td><td>短地址</td><td>老域名</td><td>新域名</td></tr>';
             foreach($_array as $i => $key){
-                $str = explode(",", $key);
                 $table .= '<tr style="text-align: center;">';
                 $table .= '<td>'.($i+1).'</td>';
-                foreach($str as $id => $url){
-                    if($id == '0'){
-                        $table .= '<td>'.getHttpType().$_SERVER['HTTP_HOST'].'/'.$url.'</td>';
-                    } else {
-                        $table .= '<td>'.$url.'</td>';
-                    }
-				}
+                $table .= '<td>'.getHttpType().$_SERVER['HTTP_HOST'].'/'.$key[0].'</td>';
+                $table .= '<td>'.$key[1].'</td>';
+                $table .= '<td>'.$key[2].'</td>';
                 $table .= '</tr>';
             }
-            echo $table .= '</table>';
+            echo $table .= '</table>'.PHP_EOL;
 		}
+    ?>
+</body>
+</html>
+<?php
     }
 }
 
@@ -251,6 +250,23 @@ function mkdirs($path) {
 function getHttpType(){
     $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
     return $http_type;
+}
+
+function getFileAll() {
+    $inDir = __DIR__.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR;
+    if ($handler = @opendir($inDir)){  
+        while (($filename = readdir($handler)) !== false) {  
+            if ($filename != '.' && $filename != '..') {  
+                $_array[] = $filename;  
+            }
+        }
+        closedir($handler);
+    }
+    if(!empty($_array)) {
+        return $_array;
+    } else {
+        exit('暂无短地址');
+    }
 }
 
 /**
