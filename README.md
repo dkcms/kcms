@@ -18,3 +18,10 @@ X-Auth-Email及X-Auth-Key参数从cloudflare后台中查看。其它部分代码
 
 m3u8-hls HTML5播放器
 https://github.com/video-dev/hls.js/releases
+
+jQuery
+https://code.jquery.com/
+
+jQuery Cookie
+https://plugins.jquery.com/cookie/
+
