@@ -15,3 +15,6 @@ X-Auth-Email及X-Auth-Key参数从cloudflare后台中查看。其它部分代码
 3、record.txt为待加入的解析列表。一行一个。文件编码为utf-8，格式为windows（cr lf）格式（务必）。每行解析值分3列，以逗号分隔，第一列为主机记录，如www，第二列为记录类型，如A记录，第三列为值，如114.114.114.114，解析多条记录中间用 | 下划线隔开
 
 4、推荐在命令行中执行 php cloudflare.php，不要在浏览器中访问。
+
+m3u8-hls HTML5播放器
+https://github.com/video-dev/hls.js/releases
