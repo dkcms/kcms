@@ -1,3 +1,5 @@
+搭建自己DNS
+
 安装依赖包
 # yum -y install gcc gcc-c++ automake openssl openssl-devel
 
